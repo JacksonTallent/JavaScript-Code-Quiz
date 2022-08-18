@@ -70,6 +70,7 @@ function endOfQuiz(){
   finalForm.setAttribute("id","finalForm");
   finalForm.appendChild(input);
   input.setAttribute("id","name");
+  input.setAttribute("placeholder","Initials");
   input.setAttribute("maxlength",3);
   finalForm.appendChild(submitButton);
   submitButton.setAttribute("id","submitButton");
