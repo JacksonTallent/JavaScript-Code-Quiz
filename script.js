@@ -1,88 +1,76 @@
-var startButton = document.querySelector("#startButton");
-var timer = document.querySelector("#timer");
-var question = document.querySelector("#question");
-var answers = document.querySelector("#answers");
+// Get references to the #generate element
+var generateBtn = document.querySelector("#generate");
 
-var questionsO ={
-                  0: "Arrays in JavaScript can be used to store:", 
-                  1: "A very useful tool used during development and debugging for printing content to the debugger is:", 
-                  2: "The condition in an if / else statement is enclosed with:", 
-                  3: "String values must be enclosed within ___ when being assigned to variables.", 
-                  4: "Commonly used data types in JavaScript DO not include:"
-                };
-var answersO ={
-                0: ["Numbers and Strings","Other Arrays","Booleans","All of the above"],
-                1: ["JavaScript","Terminal/Bash","for Loops","console.log"],
-                2: ["Quotes","Curly Brackets","Parenthesis","Square Brackets"],
-                3: ["Commas","Curly Brackets","Quotes","Parenthesis"],
-                4: ["Strings","Alerts","Booleans","Numbers"]
-              };
-var key = ["A0","A3","A2","A2","A1"];
+// Assignment code here
+function passwordOptions(){
 
-//console.log(answersO[1][0]);
+//Prompts for the options
+do {
+//options
+  var charCount = prompt("How many characters would you like your password to contain?", 16);
+  var includeUpper = confirm("Would you like your password to include uppercase letters?");
+  var includeLower = confirm("Would you like your password to include lowercase letters?");
+  var includeNum = confirm("Would you like your password to contain numbers?");
+  var includeSpecial = confirm("Would you like your password to include special characters?");
+  var isValid = true;
+  
+//Verify inputs
+  if(charCount < 8 || charCount > 128){isValid = false; alert("The password must be between 8 and 128 characters long.");}
+  if(isNaN(charCount)){isValid = false; alert("Please only use numbers when choosing the password length.")}
+}while(isValid === false);
+ var options = {
+  charCount: charCount,
+  includeUpper: includeUpper,
+  includeLower: includeLower,
+  includeNum: includeNum,
+  includeSpecial: includeSpecial
+ }
+return options;
+}
 
-// Timer function
-var timeLeft = 31;
-function startTiming() {
-  var clock = setInterval(function(){
-    timeLeft--;
-    timer.textContent = timeLeft;
+function generatePassword() {
+  // All possible characters
+  var upperA = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+  var lowerA = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+  var numA = ["0","1","2","3","4","5","6","7","8","9"];
+  var specialA = [" ","!",'"',"#","$","%","&","'","(",")","*","+",",","-",".","/",":",";","<","=",">","?","@","[","]","^","_","|","~"];
 
-//    console.log("time left: " + timeLeft);
-
-    if (timeLeft <= 0) {
-      clearInterval(clock);
-      //ADD END QUIZ
+  var workingA = [];
+  var finalA = [];
+  var charOptions = passwordOptions();
+ //Fills workingA with used characters
+  if (charOptions.includeUpper) {
+    workingA = workingA.concat(upperA);
+  }
+  if (charOptions.includeLower) {
+    workingA = workingA.concat(lowerA);
+  }
+  if (charOptions.includeNum) {
+    workingA = workingA.concat(numA);
+  }
+  if (charOptions.includeSpecial) {
+    workingA = workingA.concat(specialA);
+  }
+  //Logs all used characters
+  console.log(workingA);
+  //Creates the final password
+  for (var i = 0; i < charOptions.charCount; i++) {
+    finalA.push (workingA[Math.floor(Math.random() * workingA.length)]); 
+  //^Adds random characters to finalA
     }
-  },1000)}
-
-function nextQuestion() {
-  for(i=0;i<4;i++){
-    document.getElementById("A"+i).remove();
-  }
-  quizzingStart();
+  console.log(finalA)
+    return finalA.join("");
+  //^Turns finalA into string.
 }
 
+// Write password to the #password input
+function writePassword() {
+  var password = generatePassword();
+  var passwordText = document.querySelector("#password");
 
-//todo: nextQuestion() which clears the buttons & question elements, checks whether the answer is right, then calls quizzing() again
-// OR, just replaces the text within the buttons & which one is considered right, and loops quizzing until all questions have been asked
+  passwordText.value = password;
 
-
-var questionNum = 0;
-var score = 0;
-var scratch;
-//Main quiz
-function quizzingStart() {
-  startTiming();
-  startButton.setAttribute("style","display:none");
-//show question
-  question.textContent = questionsO[questionNum];
-  for(i=0; i<4; i++) {
-//show possible answers
-    var posAnswers = document.createElement("button");
-    answers.appendChild(posAnswers);
-    posAnswers.textContent = answersO[questionNum][i];
-    posAnswers.setAttribute("id", "A"+i);
-    posAnswers.addEventListener("click", function(){
-//answer checking
-      if(this.id === key[questionNum]){
-        score += 10;
-        timeLeft += 5;
-        questionNum++;
-        document.body.style.backgroundColor = "green";
-        var timeouting = setTimeout(function(){document.body.style.backgroundColor = "transparent";},500).then(clearTimeout(timeouting));
-        nextQuestion();
-      }
-      else{
-        timeLeft -= 5;
-        document.body.style.backgroundColor = "red";
-        var timeouting = setTimeout(function(){document.body.style.backgroundColor = "transparent";},500).then(clearTimeout(timeouting));
-      }
-    })
-  }
 }
 
-startButton.addEventListener("click", function(){
-  quizzingStart();
-});
-//EXAMPLE viewHS.addEventListener("click", function(){ viewHS() }})
+// Add event listener to generate button
+generateBtn.addEventListener("click", writePassword);
